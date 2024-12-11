@@ -38,3 +38,5 @@ export const create = mutation({
         return board
     }
 })
+
+// this endpoint is to create a board and the all the operations related to it
