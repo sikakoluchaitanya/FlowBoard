@@ -18,7 +18,10 @@ interface BoardListProps {
 }
 
 export const BoardList = ({ orgId, query }: BoardListProps) => {
-    const data = useQuery(api.boards.get, { orgId });
+    const data = useQuery(api.boards.get, { 
+        orgId,
+        ...query,
+    });
 
     if(data === undefined) {
         return(
@@ -64,7 +67,7 @@ export const BoardList = ({ orgId, query }: BoardListProps) => {
         )
     }
 
-  return (
+return (
     <div>
         <h2 className="text-3xl">
             {query.favorites ? "Favorites boards" : "Team Boards"}
@@ -84,10 +87,10 @@ export const BoardList = ({ orgId, query }: BoardListProps) => {
                     authorName={board.authorName}
                     createdAt={board._creationTime}
                     orgId={board.orgId}
-                    isFavorite={false}
+                    isFavorite={board.isFavorite}
                 />
             ))}
         </div>
     </div>
-  );
+);
 };

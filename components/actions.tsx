@@ -63,7 +63,7 @@ export const Actions = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     className=" flex items-center p-3 cursor-pointer hover:bg-gray-100"
-                    onClick={() => onOpen({ id, title })}
+                    onClick={() => onOpen(id, title)}
                 >
                     <Pencil className=" h-4 w-4 mr-2"/>
                     Rename

@@ -75,7 +75,7 @@ export const OrgSidebar = () => {
                     <Link href={{
                         pathname: "/",
                         query: {
-                            favorites: true
+                            favorites: "true"
                         }
                     }}>
                         <Star className="mr-2 h-4 w-4" />

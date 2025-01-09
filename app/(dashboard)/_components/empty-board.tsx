@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { useOrganization } from "@clerk/nextjs";
 import { useApiMutations } from "@/hooks/use-api-mutations";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const EmptyBoard = () => {
+    const router = useRouter();
     const { organization } = useOrganization();
     const { mutate, pending } = useApiMutations(api.board.create);
 
@@ -20,6 +22,7 @@ export const EmptyBoard = () => {
         })
             .then((id) => {
                 toast.success("Board created successfully");
+                router.push(`/board/${id}`);
             })
             .catch((error) => {
                 toast.error("failed to create board");
