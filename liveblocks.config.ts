@@ -56,5 +56,7 @@ declare global {
 
 export const {
   suspense: { RoomProvider },
+  useOthers,
+  useSelf,
 } = createRoomContext(client);
 
