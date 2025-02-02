@@ -20,15 +20,11 @@ interface InfoProps {
 const font = Poppins({
     subsets: ["latin"],
     weight: ["600"],
-})
+});
 
 const TabSeprator = () => {
-    return (
-        <div className="text-neutral-300 px-1.5">
-
-        </div>
-    )
-}
+    return <div className="h-6 w-[1px] bg-neutral-300 mx-2" />;
+};
 
 export const Info = ({ boardId }: InfoProps) => {
     const { onOpen } = useRenameModal();
@@ -36,12 +32,14 @@ export const Info = ({ boardId }: InfoProps) => {
         id: boardId as Id<"boards"> 
     });
 
-    if(!data) return <InfoSkeleton />
+    if (!data) return <InfoSkeleton />;
+
     return (
-        <div className="absolute top-2 left-2 bg-white rounded-md px-1.5 h-12 items-center shadow-md">
+        <div className="absolute top-2 left-2 bg-white rounded-md px-1.5 h-12 shadow-md flex items-center space-x-2">
+            {/* Logo & Board Text in Flex */}
             <Hint label="Go to Boards" side="bottom" sideOffset={10}>
-                <Button asChild variant="board" className="px-2">
-                    <Link href="/">
+                <Button asChild variant="board" className="px-2 flex items-center space-x-2">
+                    <Link href="/" className="flex items-center space-x-2">
                         <Image
                             src="/logo.svg"
                             alt="Flowboard Logo"
@@ -54,37 +52,36 @@ export const Info = ({ boardId }: InfoProps) => {
                     </Link>
                 </Button>
             </Hint>
+
             <TabSeprator />
-                <Hint label="Edit title" side="bottom" sideOffset={10}>
-                    <Button
-                        variant="board"
-                        className="text-base font-normal px-2"
-                        onClick={() => onOpen(data._id, data.title)}
-                        >
-                        {data.title}
+
+            {/* Board Title */}
+            <Hint label="Edit title" side="bottom" sideOffset={10}>
+                <Button
+                    variant="board"
+                    className="text-base font-normal px-2"
+                    onClick={() => onOpen(data._id, data.title)}
+                >
+                    {data.title}
+                </Button>
+            </Hint>
+
+            <TabSeprator />
+
+            {/* Actions Menu */}
+            <Actions id={data._id} title={data.title} side="bottom" sideOffset={10}>
+                <Hint label="Main Menu" side="bottom" sideOffset={10}>
+                    <Button size="icon" variant="board">
+                        <Menu />
                     </Button>
                 </Hint>
-            <TabSeprator />
-            <Actions
-                id={data._id}
-                title={data.title}
-                side = "bottom"
-                sideOffset={10}
-            >
-                <div>
-                    <Hint label="Main Menu" side="bottom" sideOffset={10}>
-                        <Button size="icon" variant="board">
-                            <Menu/>
-                        </Button>
-                    </Hint>
-                </div>
             </Actions>
         </div>
-    )
-}
+    );
+};
 
 export const InfoSkeleton = () => {
     return (
-        <div className="absolute top-2 left-2 bg-white rounded-md px-1.5 h-12 items-center shadow-md w-[300px]"/>
-    )
-}
+        <div className="absolute top-2 left-2 bg-white rounded-md px-1.5 h-12 shadow-md w-[300px]" />
+    );
+};
