@@ -20,7 +20,7 @@ export const UserAvatar = ({
 }: UserAvatarProps) => {
     return(
         <Hint label={name || "Team Member"} side="bottom" sideOffset={18}>
-            <Avatar className="h-8 w-8 border-2" style={{ borderColor }}>
+            <Avatar className="h-8 w-8 rounded-full border-4" style={{ borderColor }}>
                 <AvatarImage src={src}/>
                 <AvatarFallback className="text-xs font-semibold">
                     {fallback}
