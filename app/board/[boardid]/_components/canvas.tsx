@@ -13,7 +13,6 @@ import { LiveObject } from "@liveblocks/client";
 import { LayerPreview } from "./layer-preview";
 import { SelectionBox } from "./selection-box";
 import { SelectionTools } from "./selection-tools";
-import { v } from "convex/values";
 
 const MAX_LAYERS = 100;
 

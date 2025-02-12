@@ -4,6 +4,7 @@ import { useStorage } from "@/liveblocks.config";
 import { LayerType } from "@/types/canvas";
 import { memo } from "react";
 import { Rectangle } from "./rectangle";
+import { Circle } from "./circle";
 
 
 interface LayerPreviewProps {
@@ -24,6 +25,15 @@ export const LayerPreview = memo(({
     }
 
     switch(layer.type) {
+        case LayerType.Circle:
+            return (
+                <Circle
+                    id={id}
+                    layer={layer}
+                    selectionColor={selectionColor}
+                    onLayerPointDown={onLayerPointDown}
+                />
+            )
         case LayerType.Rectangle:
             return (
                 <div>
