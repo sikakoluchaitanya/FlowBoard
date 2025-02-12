@@ -93,6 +93,14 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         });
     },[canvasState])
 
+    const unselectedLayers = useMutation((
+        {self, setMyPresence}
+    ) => {
+        if(self.presence.selection.length === 0) {
+            setMyPresence({ selection: [] }, {addToHistory: true});
+        }
+    },[])
+
     const resizeSelectedLayer = useMutation((
         { storage, self },
         point: Point,
@@ -140,9 +148,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
 
         if(canvasState.mode === CanvasMode.Translating) {
             translateSelectedLayer(current);
-        }
-
-        if(canvasState.mode === CanvasMode.Resizing) {
+        }else if(canvasState.mode === CanvasMode.Resizing) {
             resizeSelectedLayer(current);
         }
 
@@ -155,7 +161,19 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         setMyPresence({
             cursor: null
         })
-    },[])
+    },[]);
+
+    const onPointerDown = useCallback((
+        e: React.PointerEvent
+    ) => {
+        const point = pointerEventToCanvasPoint(e, camera);
+
+        if(canvasState.mode === CanvasMode.inserting) {
+            return;
+        }
+
+        setCanvasState({origin: point, mode: CanvasMode.Pressing});
+    },[camera, canvasState.mode, setCanvasState])
 
     const onPointerUp = useMutation((
         {},
@@ -163,7 +181,14 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     ) => {
         const point = pointerEventToCanvasPoint(e, camera);
 
-        if(canvasState.mode === CanvasMode.inserting) {
+        if(canvasState.mode === CanvasMode.Pressing ||
+            canvasState.mode === CanvasMode.None
+        ) {
+            unselectedLayers();
+            setCanvasState({
+                mode: CanvasMode.None,
+            })
+        }else if(canvasState.mode === CanvasMode.inserting) {
             insertLayers(canvasState.layerType, point);
         } else {
             setCanvasState({ mode: CanvasMode.None });
@@ -175,7 +200,8 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         camera,
         canvasState,
         history,
-        insertLayers
+        insertLayers,
+        unselectedLayers
     ])
 
     const selections = useOthersMapped((other) => other.presence.selection);
@@ -234,6 +260,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
                 onPointerMove={onPointerMove}
                 onPointerLeave={onPointerLeave}
                 onPointerUp={onPointerUp}
+                onPointerDown={onPointerDown}
             >
                 <g
                     style={{
