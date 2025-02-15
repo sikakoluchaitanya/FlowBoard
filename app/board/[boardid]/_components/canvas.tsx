@@ -13,6 +13,7 @@ import { LiveObject } from "@liveblocks/client";
 import { LayerPreview } from "./layer-preview";
 import { SelectionBox } from "./selection-box";
 import { SelectionTools } from "./selection-tools";
+import { useDeleteLayers } from "@/hooks/use-delete-layers";
 
 const MAX_LAYERS = 100;
 
@@ -20,17 +21,15 @@ interface CanvasProps {
     boardId: string;
 }
 export const Canvas = ({ boardId }: CanvasProps) => {
-    const layerIds = useStorage((root) => {
-        return root.layersIds || []
-    }) || []
+    const layerIds = useStorage((root) => root.layersIds) ?? [];
     const [canvasState, setCanvasState] = useState<CanvasState>({
         mode: CanvasMode.None
     });
     const [camera, setCamera] = useState<camera>({ x: 0, y: 0 });
     const [lastUsedColor, setLastUsedColor] = useState<Color>({
-        r: 0,
-        g: 0,
-        b: 0
+        r: 255,
+        g: 255,
+        b: 255
     });
     const history = useHistory();
     const canUndo = useCanUndo();
@@ -94,10 +93,8 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         });
     },[canvasState])
 
-    const unselectedLayers = useMutation((
-        {self, setMyPresence}
-    ) => {
-        if(self.presence.selection.length === 0) {
+    const unselectedLayers = useMutation(({self, setMyPresence}) => {
+        if(self.presence.selection.length > 0) {
             setMyPresence({ selection: [] }, {addToHistory: true});
         }
     },[])
@@ -127,7 +124,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         current: Point,
         origin: Point
     ) => {
-        if (Math.abs(current.x = origin.x) + Math.abs(current.y - origin.y) > 5) {
+        if (Math.abs(current.x - origin.x) + Math.abs(current.y - origin.y) > 5) {
             setCanvasState({
                 mode: CanvasMode.SelectionNet,
                 origin,
@@ -149,12 +146,14 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         })
 
         const ids = findIntersectingLayersWithRectangle(
-            layerIds,
+            layerIds ?? [],
             layers,
             origin,
             current,
-        )
-    },[])
+        );
+
+        setMyPresence({ selection: ids });
+    },[layerIds])
 
     const onResizeHandlePointerDown = useCallback((
         corner: Side,
@@ -193,7 +192,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         setMyPresence({
             cursor: current
         })
-    },[canvasState, camera, resizeSelectedLayer, translateSelectedLayer])
+    },[canvasState, camera, resizeSelectedLayer, translateSelectedLayer, updateSelectionNet, startMultiSelection])
 
     const onPointerLeave = useMutation(({ setMyPresence }) => {
         setMyPresence({
@@ -239,7 +238,8 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         canvasState,
         history,
         insertLayers,
-        unselectedLayers
+        unselectedLayers,
+        setCanvasState
     ])
 
     const selections = useOthersMapped((other) => other.presence.selection);
@@ -264,7 +264,9 @@ export const Canvas = ({ boardId }: CanvasProps) => {
             setMyPresence({ selection:[layerId] }, {addToHistory: true});
         }
         setCanvasState({ mode: CanvasMode.Translating, current: point });
-    }, [])
+    }, [setCanvasState, camera, history, canvasState.mode])
+
+    const deleteLayers = useDeleteLayers();
 
     const layerIdsToColorSelection = useMemo(() => {
         const layerIdsToColorSelection: Record<string, string> = {};
@@ -306,14 +308,14 @@ export const Canvas = ({ boardId }: CanvasProps) => {
             >
                 <g
                     style={{
-                        transform: `translate(${camera.x}px, ${camera.y}px)`
+                        transform: `translate(${camera.x}px, ${camera.y}px)`,
                     }}
                 >
                     {layerIds.map((layerId) => (
                         <LayerPreview
                             key={layerId}
                             id={layerId}
-                            onLayerPointDown={onLayerPointerDown}
+                            onLayerPointerDown={onLayerPointerDown}
                             selectionColor={layerIdsToColorSelection[layerId]}
                         />
                     ))}

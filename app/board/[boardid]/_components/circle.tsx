@@ -31,6 +31,7 @@ export const Circle = ({
             fill={layer.fill ? colorToCss(layer.fill) : "#000"}
             stroke={selectionColor || "transparent" }
             strokeWidth="1"
+            
         />
     )
 }

@@ -5,7 +5,7 @@ interface RectangleProps {
     id: string;
     layer: RectangleLayer;
     selectionColor?: string;
-    onLayerPointDown: (e: React.PointerEvent, layerId: string) => void;
+    onLayerPointDown: (e: React.PointerEvent, id: string) => void;
 }
 
 export const Rectangle = ({
@@ -16,11 +16,13 @@ export const Rectangle = ({
 }: RectangleProps) => {
     const { x, y, width, height, fill } = layer;
 
+    console.log("Rendering Rectangle:", id, "Fill:", fill); // Debugging
+
     return (
         <rect
             className="drop-shadow-md"
             onPointerDown={(e) => onLayerPointDown(e, id)}
-            style={{
+            style={{    
                 transform: `translate(${x}px, ${y}px)`,
             }}
             x={0}
@@ -31,5 +33,5 @@ export const Rectangle = ({
             fill={fill ? colorToCss(fill) : "#000"}
             stroke={selectionColor || "transparent"}
         />
-    )
-}
+    );
+};
